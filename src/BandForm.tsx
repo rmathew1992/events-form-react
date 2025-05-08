@@ -1,6 +1,6 @@
 import React from 'react'
-import TicketForm from './TicketForm';
-import { BandEvent } from './types';
+import TicketForm from './TicketForm'
+import { BandEvent } from './types'
 
 const btessEvent: BandEvent = {
   "name": "BTESS",

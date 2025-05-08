@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
-import DOMPurify from 'dompurify';
-import { BandEvent } from './types';
+import React, { useEffect, useState } from "react"
+import DOMPurify from "dompurify"
+import { BandEvent } from "./types"
 
 export interface BandEventProps {
   event: BandEvent
@@ -11,51 +11,71 @@ const formatCurrency = (amount: number): string => {
 }
 
 const formatDate = (timestamp: number): string => {
-  return new Date(timestamp).toLocaleString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
+  return new Date(timestamp).toLocaleString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   })
 }
 
 interface OrderItem {
-  ticketType: string;
-  quantity: number;
+  ticketType: string
+  quantity: number
+}
+
+interface CustomerInfo {
+  firstName: string
+  lastName: string
+  address: string
+  creditCardNumber: string
+  expiryDate: string
+  cvv: string
 }
 
 const TicketForm: React.FC<BandEventProps> = ({ event }) => {
-  const sanitizedDescriptionBlurb = DOMPurify.sanitize(event.description_blurb);
-  const downArrowhead = '\u2304';
+  const sanitizedDescriptionBlurb = DOMPurify.sanitize(event.description_blurb)
+  const downArrowhead = "\u2304" 
 
-  const [orderItems, setOrderItems] = useState<OrderItem[]>([])
+  const [orderItems, setOrderItems] = useState<OrderItem[]>([]) 
+  const [customerInfo, setCustomerInfo] = useState<CustomerInfo>({
+    firstName: "",
+    lastName: "",
+    address: "",
+    creditCardNumber: "",
+    expiryDate: "",
+    cvv: "",
+  })
 
   const calculateTotalPrice = (): number => {
     return orderItems.reduce((total, item) => {
-      const ticketType = event.ticketTypes.find(t => t.type === item.ticketType)
+      const ticketType = event.ticketTypes.find(
+        (t) => t.type === item.ticketType
+      )
       return total + (ticketType ? ticketType.cost * item.quantity : 0)
     }, 0)
   }
 
   const addOrUpdateTicket = (ticketType: string) => {
-    const existingTicketIndex = orderItems.findIndex(item => item.ticketType === ticketType)
+    const existingTicketIndex = orderItems.findIndex(
+      (item) => item.ticketType === ticketType
+    )
 
     if (existingTicketIndex >= 0) {
       const updatedOrderItems = [...orderItems]
       updatedOrderItems[existingTicketIndex].quantity += 1
       setOrderItems(updatedOrderItems)
     } else {
-      setOrderItems([
-        ...orderItems,
-        { ticketType: ticketType, quantity: 1 }
-      ])
+      setOrderItems([...orderItems, { ticketType: ticketType, quantity: 1 }])
     }
   }
 
   const removeTicket = (ticketType: string) => {
-    const existingTicketIndex = orderItems.findIndex(item => item.ticketType === ticketType)
+    const existingTicketIndex = orderItems.findIndex(
+      (item) => item.ticketType === ticketType
+    )
     const updatedOrderItems = [...orderItems]
 
     if (existingTicketIndex === -1) {
@@ -69,10 +89,17 @@ const TicketForm: React.FC<BandEventProps> = ({ event }) => {
     }
   }
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setCustomerInfo(prevInfo => ({
+      ...prevInfo,
+      [name]: value
+    }))
+  }
+
   useEffect(() => {
     console.log("Updated orderItems:", orderItems)
   }, [orderItems])
-
 
   return (
     <div className="band-event-container">
@@ -124,8 +151,91 @@ const TicketForm: React.FC<BandEventProps> = ({ event }) => {
           </div>
         ))}
       </div>
+      <div>
+        <label htmlFor="firstName">First Name</label>
+        <input
+          type="text"
+          style={{
+            width: "200px",
+            borderRadius: "5px",
+            border: "1px solid #ccc",
+          }}
+          name="firstName"
+          value={customerInfo.firstName}
+          onChange={handleInputChange}
+        />
+
+        <label htmlFor="lastName">Last Name</label>
+        <input
+          type="text"
+          style={{
+            width: "200px",
+            borderRadius: "5px",
+            border: "1px solid #ccc",
+          }}
+          name="lastName"
+          value={customerInfo.lastName}
+          onChange={handleInputChange}
+        />
+
+        <label htmlFor="address">Address</label>
+        <input
+          type="text"
+          style={{
+            width: "200px",
+            borderRadius: "5px",
+            border: "1px solid #ccc",
+          }}
+          name="address"
+          value={customerInfo.address}
+          onChange={handleInputChange}
+        />
+        <h2> Payment Details</h2>
+        <input
+          type="text"
+          style={{
+            width: "200px",
+            borderRadius: "5px",
+            border: "1px solid #ccc",
+          }}
+          name="creditCardNumber"
+          value={customerInfo.creditCardNumber}
+          placeholder="0000 0000 0000 0000"
+          onChange={handleInputChange}
+        />
+
+        <input
+          type="text"
+          style={{
+            width: "200px",
+            borderRadius: "5px",
+            border: "1px solid #ccc",
+          }}
+          name="expiryDate"
+          value={customerInfo.expiryDate}
+          placeholder="MM/YY"
+          onChange={handleInputChange}
+        />
+
+        <input
+          type="text"
+          style={{
+            width: "200px",
+            borderRadius: "5px",
+            border: "1px solid #ccc",
+          }}
+          name="cvv"
+          value={customerInfo.cvv}
+          placeholder="CVV"
+          onChange={handleInputChange}
+        />
+      </div>
+
+      <button type="submit" className="complete-order-button" onCLick={h}>
+        Get Tickets
+      </button>
     </div>
-  );
+  )
 }
 
 export default TicketForm
