@@ -97,6 +97,64 @@ const TicketForm: React.FC<BandEventProps> = ({ event }) => {
     }))
   }
 
+    const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validate form data
+    if (orderItems.length === 0) {
+      alert("Please select at least one ticket.");
+      return;
+    }
+    
+    if (!customerInfo.firstName || !customerInfo.lastName || !customerInfo.address) {
+      alert("Please fill in all required customer information fields.");
+      return;
+    }
+    
+    if (!customerInfo.creditCardNumber || !customerInfo.expiryDate || !customerInfo.cvv) {
+      alert("Please fill in all required payment details.");
+      return;
+    }
+    
+    // Calculate ticket totals by type
+    const ticketsByType = orderItems.map(item => {
+      const ticketType = event.ticketTypes.find(t => t.type === item.ticketType);
+      return {
+        type: item.ticketType,
+        quantity: item.quantity,
+      }
+    })
+    
+    // Order timestamp
+    const orderDate = new Date().toISOString();
+    
+    // Create the complete order object
+    const orderData = {
+      customer: {
+        firstName: customerInfo.firstName,
+        lastName: customerInfo.lastName,
+        address: customerInfo.address,
+        // Definitely shouldn't be sending credit card numbers willy nill
+        paymentMethod: {
+          creditCard: customerInfo.creditCardNumber,
+          expiryDate: customerInfo.expiryDate,
+          cvv: customerInfo.cvv
+        }
+      },
+      event: {
+        id: event.id,
+        name: event.name,
+        date: event.date,
+        formattedDate: formatDate(event.date),
+        location: event.location
+      },
+      ticketsByType: ticketsByType
+    };
+    
+    // Log the order data (in a real app, you would send this to a server)
+    console.log("Order Submitted:", orderData);
+  }
+
   useEffect(() => {
     console.log("Updated orderItems:", orderItems)
   }, [orderItems])
@@ -231,7 +289,7 @@ const TicketForm: React.FC<BandEventProps> = ({ event }) => {
         />
       </div>
 
-      <button type="submit" className="complete-order-button" onCLick={h}>
+      <button type="submit" className="complete-order-button" onClick={handleSubmit}>
         Get Tickets
       </button>
     </div>
