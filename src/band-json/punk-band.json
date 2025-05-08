@@ -1,0 +1,22 @@
+{
+  "name": "Cindy and The Scintillators",
+  "id": "cindy",
+  "date": 1686761430000,
+  "location": "565 Broadway, Tacoma, WA 98402",
+  "description_blurb": "<div><h3>hey, I'm cindy</h3><p>Im purposefully not using punctuation because thats how punkrock i am. come listen to our stuff or dont i dont care.</p></div>.",
+  "imgUrl": "https://placehold.co/600x400/54176f/ffffff",
+  "ticketTypes": [
+    {
+      "type": "general",
+      "name": "General Admission",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "cost": 6000
+    },
+    {
+      "type": "vip",
+      "name": "VIP",
+      "description": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+      "cost": 15000
+    }
+  ]
+}
