@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { BandEventProps } from './types'
 import DOMPurify from 'dompurify';
+import { BandEvent } from './types';
 
+export interface BandEventProps {
+  event: BandEvent
+}
 
 const formatCurrency = (amount: number): string => {
   return `$${(amount / 100).toFixed(2)}`
@@ -27,10 +30,15 @@ const TicketForm: React.FC<BandEventProps> = ({ event }) => {
   const sanitizedDescriptionBlurb = DOMPurify.sanitize(event.description_blurb);
   const downArrowhead = '\u2304';
 
-  const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
-  useEffect(() => {
-  console.log("Updated orderItems:", orderItems);
-}, [orderItems]);
+  const [orderItems, setOrderItems] = useState<OrderItem[]>([])
+
+  const calculateTotalPrice = (): number => {
+    return orderItems.reduce((total, item) => {
+      const ticketType = event.ticketTypes.find(t => t.type === item.ticketType)
+      return total + (ticketType ? ticketType.cost * item.quantity : 0)
+    }, 0)
+  }
+
   const addOrUpdateTicket = (ticketType: string) => {
     const existingTicketIndex = orderItems.findIndex(item => item.ticketType === ticketType)
 
@@ -46,12 +54,34 @@ const TicketForm: React.FC<BandEventProps> = ({ event }) => {
     }
   }
 
+  const removeTicket = (ticketType: string) => {
+    const existingTicketIndex = orderItems.findIndex(item => item.ticketType === ticketType)
+    const updatedOrderItems = [...orderItems]
+
+    if (existingTicketIndex === -1) {
+      return
+    } else if (updatedOrderItems[existingTicketIndex].quantity <= 1) {
+      updatedOrderItems.splice(existingTicketIndex, 1)
+      setOrderItems(updatedOrderItems)
+    } else {
+      updatedOrderItems[existingTicketIndex].quantity -= 1
+      setOrderItems(updatedOrderItems)
+    }
+  }
+
+  useEffect(() => {
+    console.log("Updated orderItems:", orderItems)
+  }, [orderItems])
+
 
   return (
     <div className="band-event-container">
       <div className="band-event-header">
         <h1>{event.name}</h1>
         <img src={event.imgUrl} alt={`${event.name} image`} />
+      </div>
+      <div className="order-total">
+        <strong>Total:</strong> {formatCurrency(calculateTotalPrice())}
       </div>
 
       <div className="band-event-info">
@@ -87,7 +117,7 @@ const TicketForm: React.FC<BandEventProps> = ({ event }) => {
             <button
               type="button"
               className="remove-ticket-btn"
-              // onClick={() => removeTicket(index)}
+              onClick={() => removeTicket(ticket.type)}
             >
               {downArrowhead}
             </button>

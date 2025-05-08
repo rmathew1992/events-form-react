@@ -14,7 +14,3 @@ export interface BandEvent {
   imgUrl: string
   ticketTypes: TicketType[]
 }
-
-export interface BandEventProps {
-  event: BandEvent
-}
