@@ -11,3 +11,131 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+hr {
+    display: block;
+    position: relative;
+    padding: 0;
+    margin: 8px auto;
+    height: 0;
+    width: 100%;
+    max-height: 0;
+    font-size: 1px;
+    line-height: 0;
+    clear: both;
+    border: none;
+    border-top: 1px solid #aaaaaa;
+    border-bottom: 1px solid #ffffff;
+}
+
+.band-event-header {
+  padding: 10px;
+}
+
+.band-event-info {
+  padding: 0 10px;
+}
+
+.band-event-details {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.band-event-details img {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+}
+
+.band-event-details h2,
+.band-event-details h3 {
+  margin: 0;
+}
+
+.band-event-details h3 {
+  font-weight: 100;
+}
+
+/* Change to column layout on screens smaller than 768px */
+@media (max-width: 768px) {
+  .band-event-details {
+    flex-direction: column;
+  }
+}
+
+.ticket-options {
+  background-color: var(--gray-background);
+  padding: var(--spacing-lg);
+}
+
+.ticket-options p {
+  margin: var(--spacing-lg) 0;
+}
+
+.ticket-options div {
+  margin: var(--spacing-xl) 0;
+}
+
+.ticket-option {
+  display: flex;
+}
+
+.order-total {
+  display: flex;
+  justify-content: space-between;
+}
+
+.order-total p {
+  margin: 0;
+}
+
+.order-details-sub-container {
+  display: flex;
+  flex-wrap: wrap;  
+  gap: 0.5rem;      
+  width: 100%;
+  margin: 15px 0;
+}
+
+input {
+  box-sizing: border-box;
+}
+
+.input-half {
+  flex: 1 1 calc(50% - 0.25rem); /* Takes half width minus gap */
+}
+
+.input-full {
+  width: 100%;
+}
+
+.get-tickets-btn {
+  background-color: grey;
+  color: white;
+  width: 100%;
+  padding: 10px 20px;
+  border: none;
+}
+
+.ticket-btn {
+  background-color: grey;
+  color: white;
+  width: 100%;
+  padding: 8px;
+  border: none;
+}
+
+.ticket-selection-container {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
+}
+
+.ticket-qty {
+  min-width: 40px;
+  text-align: center;
+  font-size: 15px;
+  margin: 0;
+}

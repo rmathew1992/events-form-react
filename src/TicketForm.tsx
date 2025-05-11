@@ -118,15 +118,11 @@ const TicketForm: React.FC<BandEventProps> = ({ event }) => {
     
     // Calculate ticket totals by type
     const ticketsByType = orderItems.map(item => {
-      const ticketType = event.ticketTypes.find(t => t.type === item.ticketType);
       return {
         type: item.ticketType,
         quantity: item.quantity,
       }
     })
-    
-    // Order timestamp
-    const orderDate = new Date().toISOString();
     
     // Create the complete order object
     const orderData = {
@@ -134,7 +130,7 @@ const TicketForm: React.FC<BandEventProps> = ({ event }) => {
         firstName: customerInfo.firstName,
         lastName: customerInfo.lastName,
         address: customerInfo.address,
-        // Definitely shouldn't be sending credit card numbers willy nill
+        // Definitely shouldn't be sending credit card numbers willy nilly
         paymentMethod: {
           creditCard: customerInfo.creditCardNumber,
           expiryDate: customerInfo.expiryDate,
@@ -145,7 +141,6 @@ const TicketForm: React.FC<BandEventProps> = ({ event }) => {
         id: event.id,
         name: event.name,
         date: event.date,
-        formattedDate: formatDate(event.date),
         location: event.location
       },
       ticketsByType: ticketsByType
@@ -163,135 +158,125 @@ const TicketForm: React.FC<BandEventProps> = ({ event }) => {
     <div className="band-event-container">
       <div className="band-event-header">
         <h1>{event.name}</h1>
-        <img src={event.imgUrl} alt={`${event.name} image`} />
-      </div>
-      <div className="order-total">
-        <strong>Total:</strong> {formatCurrency(calculateTotalPrice())}
-      </div>
-
-      <div className="band-event-info">
         <div className="event-metadata">
           <p className="event-date">
-            <strong>Date:</strong> {formatDate(event.date)}
+            <span style={{ fontSize: "24px", marginRight: "5px" }}>📅</span> {formatDate(event.date)}
           </p>
           <p className="event-location">
-            <strong>Location:</strong> {event.location}
+            <span style={{ fontSize: "24px", marginRight: "5px" }}>📍</span> {event.location}
           </p>
         </div>
-
-        <div
-          className="event-description"
-          dangerouslySetInnerHTML={{ __html: sanitizedDescriptionBlurb }}
-        />
       </div>
+      
+      <div className="band-event-details">
+        <div className="band-event-info">
+          <img src={event.imgUrl} alt={`${event.name}`} />
+          <div
+            className="event-description"
+            dangerouslySetInnerHTML={{ __html: sanitizedDescriptionBlurb }}
+          />
+        </div>
 
-      <div className="ticket-options">
-        <h2>Ticket Options</h2>
-        {event.ticketTypes.map((ticket, index) => (
-          <div key={`${event.id}-${ticket.type}`} className="ticket-option">
-            <h3>{ticket.name}</h3>
-            <p className="ticket-description">{ticket.description}</p>
-            <p className="ticket-price">{formatCurrency(ticket.cost)}</p>
-            <button
-              type="button"
-              className="remove-ticket-btn"
-              onClick={() => addOrUpdateTicket(ticket.type)}
-            >
-              ^
-            </button>
-            <button
-              type="button"
-              className="remove-ticket-btn"
-              onClick={() => removeTicket(ticket.type)}
-            >
-              {downArrowhead}
-            </button>
+        <div className="ticket-options">
+          <h2>Select Tickets</h2>
+          {event.ticketTypes.map((ticket, index) => (
+            <>
+              <div key={`${event.id}-${ticket.type}`} className="ticket-option">
+                <div>
+                  <h3>{ticket.name.toUpperCase()}</h3>
+                  <p className="ticket-description">{ticket.description}</p>
+                  <p className="ticket-price">{formatCurrency(ticket.cost)}</p>
+                </div>
+                <div className="ticket-selection-container">
+                  <p className="ticket-qty">{orderItems.find(item => item.ticketType === ticket.type)?.quantity || 0}</p>
+                  <div>
+                    <button
+                      type="button"
+                      className="ticket-btn add-ticket-btn"
+                      onClick={() => addOrUpdateTicket(ticket.type)}
+                    >
+                      ^
+                    </button>
+                    <button
+                      type="button"
+                      className="ticket-btn remove-ticket-btn"
+                      onClick={() => removeTicket(ticket.type)}
+                    >
+                      {downArrowhead}
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <hr />
+            </>
+          ))}
+          <div>
+            <div className="order-total">
+              <h3>TOTAL</h3> 
+              <p>
+                {formatCurrency(calculateTotalPrice())}
+              </p>
+            </div>
+            <div className="order-details-sub-container">
+                <input
+                  type="text"
+                  className="input-half"
+                  name="firstName"
+                  placeholder="First Name"
+                  value={customerInfo.firstName}
+                  onChange={handleInputChange}
+                />
+                <input
+                  type="text"
+                  className="input-half"
+                  name="lastName"
+                  placeholder="Last Name"
+                  value={customerInfo.lastName}
+                  onChange={handleInputChange}
+                />
+              <input
+                type="text"
+                className="input-full"
+                name="address"
+                placeholder="Address"
+                value={customerInfo.address}
+                onChange={handleInputChange}
+              />
+            </div>
+            <p> <strong>Payment Details</strong> </p>
+            <div className="order-details-sub-container">
+              <input
+                type="text"
+                className="input-full"
+                name="creditCardNumber"
+                value={customerInfo.creditCardNumber}
+                placeholder="0000 0000 0000 0000"
+                onChange={handleInputChange}
+              />
+
+              <input
+                type="text"
+                className="input-half"
+                name="expiryDate"
+                value={customerInfo.expiryDate}
+                placeholder="MM/YY"
+                onChange={handleInputChange}
+              />
+
+              <input
+                type="text"
+                name="cvv"
+                className="input-half"
+                value={customerInfo.cvv}
+                placeholder="CVV"
+                onChange={handleInputChange}
+              />
+            </div>
           </div>
-        ))}
+
+          <button onClick={handleSubmit} className="get-tickets-btn">Get Tickets</button>
+        </div>
       </div>
-      <div>
-        <label htmlFor="firstName">First Name</label>
-        <input
-          type="text"
-          style={{
-            width: "200px",
-            borderRadius: "5px",
-            border: "1px solid #ccc",
-          }}
-          name="firstName"
-          value={customerInfo.firstName}
-          onChange={handleInputChange}
-        />
-
-        <label htmlFor="lastName">Last Name</label>
-        <input
-          type="text"
-          style={{
-            width: "200px",
-            borderRadius: "5px",
-            border: "1px solid #ccc",
-          }}
-          name="lastName"
-          value={customerInfo.lastName}
-          onChange={handleInputChange}
-        />
-
-        <label htmlFor="address">Address</label>
-        <input
-          type="text"
-          style={{
-            width: "200px",
-            borderRadius: "5px",
-            border: "1px solid #ccc",
-          }}
-          name="address"
-          value={customerInfo.address}
-          onChange={handleInputChange}
-        />
-        <h2> Payment Details</h2>
-        <input
-          type="text"
-          style={{
-            width: "200px",
-            borderRadius: "5px",
-            border: "1px solid #ccc",
-          }}
-          name="creditCardNumber"
-          value={customerInfo.creditCardNumber}
-          placeholder="0000 0000 0000 0000"
-          onChange={handleInputChange}
-        />
-
-        <input
-          type="text"
-          style={{
-            width: "200px",
-            borderRadius: "5px",
-            border: "1px solid #ccc",
-          }}
-          name="expiryDate"
-          value={customerInfo.expiryDate}
-          placeholder="MM/YY"
-          onChange={handleInputChange}
-        />
-
-        <input
-          type="text"
-          style={{
-            width: "200px",
-            borderRadius: "5px",
-            border: "1px solid #ccc",
-          }}
-          name="cvv"
-          value={customerInfo.cvv}
-          placeholder="CVV"
-          onChange={handleInputChange}
-        />
-      </div>
-
-      <button type="submit" className="complete-order-button" onClick={handleSubmit}>
-        Get Tickets
-      </button>
     </div>
   )
 }
